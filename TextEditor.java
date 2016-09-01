@@ -1,73 +1,73 @@
-import javafx.application.Application;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class TextEditor extends Application{
+public class TextEditor{
+    private String name = "Untitled";
+    private static int count = 0;
     
-    Stage window;
-    Scene scene;
-    TextArea textArea;
-    Boolean saved = false;
-    
-    public static void main(String[]args){
-        launch(args);
+    public TextEditor(){
+        if(count != 0){
+            name = name+count;
+        }
     }
     
-    @Override
-    public void start(Stage stage) throws Exception{
-        window = stage;
+    public void display(){
         
-        //Menubar that will be located at the top of the page
+        Stage window = new Stage();
+        BorderPane borderPane = new BorderPane();
+        TextArea textArea = new TextArea();
+        
         MenuBar menuBar = new MenuBar();
         
-        //File option on Menu Bar
         Menu file = new Menu("File");
-        
-        //File Options
-        
-        //New
         MenuItem newFileItem = new MenuItem("New");
-        MenuItem exit = new MenuItem("Exit");
-        exit.setOnAction(e -> {
-            System.out.println("Closing...");
-            if(saved){
-                window.close();
-            }
+        newFileItem.setOnAction(e -> {
+            new TextEditor().display();
         });
+        MenuItem openFileItem = new MenuItem("Open");
+        openFileItem.setOnAction(e -> {
+            OpenBox.display(textArea);    
+        });
+        MenuItem saveFileItem = new MenuItem("Save");
+        MenuItem saveAsFileItem = new MenuItem("Save As");
+        MenuItem closeFileItem = new MenuItem("Close");
+        file.getItems().addAll(newFileItem, openFileItem, saveFileItem, saveAsFileItem, closeFileItem);
         
-        //Open
-        MenuItem openMenuItem = new MenuItem("Open");
-        MenuItem separatorFile = new SeparatorMenuItem();
-        file.getItems().addAll(openMenuItem,newFileItem,separatorFile,exit);
-        
-        //Edit option on menuBar
         Menu edit = new Menu("Edit");
-        
-        //Edit Options
-        MenuItem editMenuItem = new MenuItem("Undo");
+        MenuItem undoEditItem = new MenuItem("Undo");
+        MenuItem redoEditItem = new MenuItem("Redo");
         MenuItem cutEditItem = new MenuItem("Cut");
         MenuItem copyEditItem = new MenuItem("Copy");
         MenuItem pasteEditItem = new MenuItem("Paste");
-        MenuItem separator = new SeparatorMenuItem();
-        edit.getItems().addAll(editMenuItem,separator,cutEditItem,copyEditItem,pasteEditItem);
+        MenuItem deleteEditItem = new MenuItem("Delete");
+        MenuItem preferencesEditItem = new MenuItem("Preferences");
+        edit.getItems().addAll(undoEditItem, redoEditItem, cutEditItem, copyEditItem, pasteEditItem, deleteEditItem, preferencesEditItem);
         
-        //TextArea
-        textArea = new TextArea();
+        Menu help = new Menu("Help");
+        MenuItem about = new MenuItem("About");
+        help.getItems().addAll(about);
         
-        //Add menu options to menuBar
-        menuBar.getMenus().addAll(file,edit);
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(menuBar,textArea);
+        menuBar.getMenus().addAll(file, edit, help);
+        borderPane.setTop(menuBar);
         
-        scene = new Scene(vBox);
+        
+        borderPane.setCenter(textArea);
+        
+        Scene scene = count==0?new Scene(borderPane):new Scene(borderPane, 900, 600);
+        if(count == 0){
+            window.setMaximized(true);
+        }
+        
         window.setScene(scene);
+        window.setTitle(name);
+        count++;
         window.show();
     }
-    
 }
